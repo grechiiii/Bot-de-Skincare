@@ -1,128 +1,127 @@
 import streamlit as st
+from PIL import Image
 
 # --- CONFIGURACIÓN GENERAL ---
 st.set_page_config(page_title="Skincare Bot 💖", layout="wide")
 
-# --- ESTILOS PERSONALIZADOS ---
+# --- COLORES Y ESTILOS PERSONALIZADOS ---
 st.markdown("""
     <style>
-    .main {
-        background-color: #F6F9FC;
-        color: #333;
+    body {
+        background-color: #E8F5E9;
+        color: #1B5E20;
         font-family: 'Segoe UI', sans-serif;
     }
     h1, h2, h3 {
-        color: #FF69B4;
+        color: #2E7D32;
     }
     .stButton button {
-        background-color: #FFC0CB;
-        color: black;
+        background-color: #A5D6A7;
+        color: #1B5E20;
         border-radius: 8px;
-        padding: 0.5em 1em;
+        padding: 0.6em 1em;
+        font-weight: bold;
+    }
+    .card {
+        background-color: #ffffff;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # --- ENCABEZADO ---
-st.title("💁‍♀️ Chatbot de Skincare")
-st.write("Descubre cómo cuidar tu piel con información confiable, recomendaciones personalizadas y un toque de amor propio 💖")
+st.title("🌿 Chatbot Skincare Natural")
+st.write("Explora recomendaciones personalizadas, ingredientes activos y mitos con un diseño amigable y visual ✨")
 
-# --- MENÚ DE OPCIONES ---
-opciones = [
-    "🏁 Test de tipo de piel",
-    "💡 Más sobre tu tipo de piel",
-    "📋 Rutinas recomendadas",
-    "📦 Recomendación de productos",
-    "😖 Problemas comunes de piel",
-    "🧪 Ingredientes activos",
-    "🚫 Mitos del skincare",
-    "🆘 Ayuda general"
-]
+# --- OPCIONES COMO CUADROS CON IMAGEN ---
+st.markdown("### Elige una categoría:")
 
-opcion = st.sidebar.selectbox("Selecciona una opción", opciones)
+col1, col2, col3, col4 = st.columns(4)
 
-# --- LÓGICA POR SECCIÓN ---
-if opcion == opciones[0]:
-    st.subheader("🏁 Test de tipo de piel")
-    st.markdown("Puedes hacer el test oficial aquí:")
-    st.markdown("[👉 Haz el test de rutina en ISDIN](https://www.isdin.com/es/test-rutina-belleza/)")
+with col1:
+    if st.button("🧪 Tu tipo de piel"):
+        st.session_state.seccion = "test"
+    st.image("https://i.imgur.com/DxXGQxf.jpg", caption="Test de piel", use_column_width=True)
 
-elif opcion == opciones[1]:
-    st.subheader("💡 Más información sobre tu tipo de piel")
-    st.image("https://www.eucerin.com.co/_ui/skin/eucerin/images/skin-types/skin-types.jpg")
+with col2:
+    if st.button("🧴 Rutina ideal"):
+        st.session_state.seccion = "rutina"
+    st.image("https://i.imgur.com/pQZJGyi.jpg", caption="Rutinas", use_column_width=True)
+
+with col3:
+    if st.button("🍊 Ingredientes"):
+        st.session_state.seccion = "ingredientes"
+    st.image("https://i.imgur.com/5HJ6xFl.jpg", caption="Ingredientes clave", use_column_width=True)
+
+with col4:
+    if st.button("🚫 Mitos"):
+        st.session_state.seccion = "mitos"
+    st.image("https://i.imgur.com/7A0WaIH.jpg", caption="Mitos comunes", use_column_width=True)
+
+# --- CONTENIDO SEGÚN ELECCIÓN ---
+
+if 'seccion' not in st.session_state:
+    st.session_state.seccion = None
+
+if st.session_state.seccion == "test":
+    st.header("💚 Conoce tu tipo de piel")
+    st.write("Responde estas preguntas y el bot te dirá tu tipo de piel aproximado:")
+
+    agua = st.radio("¿Tu piel se siente tirante después de lavarla solo con agua?", ["Sí", "No"])
+    brillo = st.radio("¿Notas brillo en tu piel durante el día?", ["Mucho", "Un poco", "Nada"])
+    granos = st.radio("¿Tienes granitos o espinillas con frecuencia?", ["Sí", "A veces", "No"])
+    zonas = st.radio("¿Sientes que algunas zonas son secas y otras grasas?", ["Sí", "No"])
+
+    if st.button("Ver resultado"):
+        if agua == "Sí" and brillo == "Nada":
+            tipo = "Piel seca"
+        elif zonas == "Sí":
+            tipo = "Piel mixta"
+        elif brillo == "Mucho" or granos == "Sí":
+            tipo = "Piel grasa"
+        else:
+            tipo = "Piel normal"
+
+        st.success(f"Tu tipo de piel es: {tipo}")
+        st.image("https://i.imgur.com/WJYZxP6.png", caption=f"{tipo}")
+
+elif st.session_state.seccion == "rutina":
+    st.header("🧴 Rutina recomendada")
+    st.write("Aquí una rutina básica según tu tipo de piel:")
+
     st.markdown("""
-    Según [Eucerin](https://www.eucerin.com.co/acerca-de-la-piel/conocimientos-basicos-sobre-la-piel/tipos-de-piel), los principales tipos de piel son:
-
-    - **Normal**: Suave, sin imperfecciones ni grasa visible.
-    - **Seca**: Tirantez, descamación y falta de brillo.
-    - **Grasa**: Brillos, poros dilatados y tendencia a acné.
-    - **Mixta**: Zonas grasas (frente, nariz, mentón) y zonas secas.
-
-    👉 Conocer tu tipo de piel es clave para elegir los productos adecuados.
+    - **Limpieza suave:** mañana y noche.
+    - **Tónico hidratante:** sin alcohol.
+    - **Suero o esencia:** según tu necesidad.
+    - **Hidratante ligera o rica:** dependiendo tu piel.
+    - **Protector solar:** ¡todos los días!
     """)
-
-elif opcion == opciones[2]:
-    st.subheader("📋 Rutinas recomendadas según tu tipo de piel")
-    st.write("Mira este video que puede ayudarte a armar tu rutina:")
     st.video("https://www.youtube.com/watch?v=7cUWe_lz0og")
-    with st.expander("Consejos rápidos según tipo de piel"):
-        st.markdown("""
-        - **Piel seca**: Usa limpiadores suaves y cremas con ácido hialurónico.
-        - **Piel grasa**: Opta por geles no comedogénicos y exfoliaciones suaves.
-        - **Piel mixta**: Equilibra usando productos específicos en cada zona.
-        - **Piel sensible**: Usa productos sin fragancia y testados dermatológicamente.
-        """)
 
-elif opcion == opciones[3]:
-    st.subheader("📦 Recomendación de productos")
-    st.markdown("Consulta con tu dermatólogo antes de probar nuevos productos.")
+elif st.session_state.seccion == "ingredientes":
+    st.header("🍊 Ingredientes activos recomendados")
     st.markdown("""
-    🧴 Aquí algunos básicos según tipo de piel:
-    - **Piel seca**: Hidratantes con ceramidas.
-    - **Piel grasa**: Gel limpiador sin aceites.
-    - **Piel mixta**: Hidratantes ligeros tipo gel.
+    - **Ácido hialurónico:** Hidratación profunda 💧
+    - **Niacinamida:** Reduce poros y grasa 🌿
+    - **Retinol:** Renovación y anti edad ✨
+    - **Vitamina C:** Ilumina y unifica 🌞
+    - **Ácido salicílico:** Ideal para acné 🔬
     """)
+    st.image("https://i.imgur.com/5HJ6xFl.jpg", use_column_width=True)
 
-elif opcion == opciones[4]:
-    st.subheader("😖 Problemas comunes de piel")
-    st.markdown("Fuente: [Vivo Labs](https://vivolabs.es/problemas-piel-mas-comunes/)")
+elif st.session_state.seccion == "mitos":
+    st.header("🚫 Mitos del skincare que debes olvidar")
     st.markdown("""
-    - **Acné**: Relacionado con exceso de grasa, bacterias y cambios hormonales.
-    - **Rosácea**: Enrojecimiento y sensibilidad.
-    - **Hiperpigmentación**: Manchas oscuras por sol o acné.
-    - **Piel deshidratada**: Falta de agua, no confundir con piel seca.
+    ❌ *Si arde es que funciona* → No, puede ser irritación.  
+    ❌ *El limón aclara la piel* → ¡Peligroso! Puede mancharte.  
+    ❌ *Solo las mujeres deben cuidarse la piel* → ¡Falso!  
+    ❌ *Más caro es mejor* → Lo importante es que sea adecuado a ti.  
     """)
-
-elif opcion == opciones[5]:
-    st.subheader("🧪 Ingredientes activos")
-    st.markdown("Fuente: [UYU Beauty](https://uyubeauty.com/blogs/dearuyubeauty/ingredientes-activos-de-skincare-como-elegir-los-ideales-para-ti)")
-    st.markdown("""
-    - **Ácido hialurónico**: Hidratación profunda y elasticidad.
-    - **Niacinamida**: Controla grasa, calma rojeces y mejora textura.
-    - **Retinol**: Estimula la renovación celular, ideal para piel madura.
-    - **Vitamina C**: Ilumina, unifica el tono y reduce manchas.
-    - **Ácido salicílico**: Excelente para piel grasa y acné.
-    """)
-
-elif opcion == opciones[6]:
-    st.subheader("🚫 Mitos comunes del skincare")
-    st.markdown("Inspirado en [Asian Beauty Essentials](https://asianbeautyessentials.com/blogs/es/9-mitos-del-cuidado-de-la-piel)")
-    st.markdown("""
-    ❌ *El limón aclara la piel* – Falso. Puede irritar o manchar.  
-    ❌ *Si arde, es que funciona* – Puede ser señal de irritación.  
-    ❌ *Solo las mujeres deben cuidarse la piel* – Todos tenemos piel.  
-    ❌ *Los productos caros son mejores* – Lo importante es que sean adecuados para ti.  
-    """)
-
-elif opcion == opciones[7]:
-    st.subheader("🆘 Ayuda general")
-    st.markdown("""
-    1️⃣ Haz el test para conocer tu tipo de piel.  
-    2️⃣ Consulta los ingredientes ideales y tus problemas comunes.  
-    3️⃣ Mira videos de rutinas personalizadas.  
-    4️⃣ Si no sabes qué hacer, ¡esta guía te acompaña! 💖
-    """)
+    st.image("https://i.imgur.com/7A0WaIH.jpg", use_column_width=True)
 
 # --- PIE DE PÁGINA ---
 st.markdown("---")
-st.markdown("Desarrollado por *Grecia García* 💻 con amor y cuidado para tu piel 💖")
+st.markdown("Desarrollado por *Grecia García* con 💚 y ciencia para tu piel")
