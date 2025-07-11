@@ -34,7 +34,7 @@ st.markdown("Descubre tu tipo de piel y encuentra productos ideales para ti ✨"
 # --- CARGA DE BASE DE DATOS DE PRODUCTOS ---
 @st.cache_data
 def cargar_datos():
-   return pd.read_csv("./productos_skincare.csv")
+   return pd.read_csv("./productos_chatbot_final.csv")
  # Asegúrate de tener este archivo en tu proyecto
 
 df = cargar_datos()
