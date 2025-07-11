@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from PIL import Image
 
 # --- CONFIGURACIÓN GENERAL ---
@@ -29,6 +30,13 @@ st.markdown("""
 st.image("https://www.isdin.com/img/routines/test_banner.jpg", use_column_width=True)
 st.title("🌿 Test de Rutina Facial")
 st.markdown("Descubre tu tipo de piel y encuentra productos ideales para ti ✨")
+
+# --- CARGA DE BASE DE DATOS DE PRODUCTOS ---
+@st.cache_data
+def cargar_datos():
+    return pd.read_csv("productos_skincare.csv")  # Asegúrate de tener este archivo en tu proyecto
+
+df = cargar_datos()
 
 # --- TEST ---
 preguntas = [
@@ -106,25 +114,44 @@ for i, q in enumerate(preguntas):
 
 if st.button("Ver resultado"):
     mayor = max(puntajes, key=puntajes.get)
-    resultado = tipo_piel[mayor]
-    st.success(f"Tu tipo de piel es: {resultado}")
-    imagenes = {
-        "NORMAL": "https://i.imgur.com/0iKXwra.jpg",
-        "SECA": "https://i.imgur.com/KcsIt8Q.jpg",
-        "GRASA": "https://i.imgur.com/REf90Y3.jpg",
-        "MIXTA": "https://i.imgur.com/nk6BoIO.jpg"
-    }
-    st.image(imagenes[resultado], caption=f"Piel {resultado}")
+    tipo_usuario = tipo_piel[mayor]
+    st.success(f"Tu tipo de piel es: {tipo_usuario}")
 
-    st.markdown("### Productos recomendados:")
-    if resultado == "GRASA":
-        st.image("https://i.imgur.com/zyEXiEF.jpg", caption="Gel limpiador seborregulador")
-    elif resultado == "SECA":
-        st.image("https://i.imgur.com/VIRKa8q.jpg", caption="Crema hidratante intensiva")
-    elif resultado == "MIXTA":
-        st.image("https://i.imgur.com/VxQxa5p.jpg", caption="Hidratante ligera para zonas mixtas")
-    elif resultado == "NORMAL":
-        st.image("https://i.imgur.com/Fm9ZV6g.jpg", caption="Cuidado básico para piel equilibrada")
+    st.markdown("### 🎯 ¿Cuál es tu principal necesidad?")
+    necesidad = st.text_input("Ej: acné, hidratación, manchas, arrugas...").lower()
+    edad_usuario = st.selectbox("¿En qué rango de edad estás?", ["15-25", "26-35", "36-50", "50+"])
+
+    if necesidad:
+        resultados = df[
+            df['tipo_piel'].str.lower().str.contains(tipo_usuario.lower()) &
+            df['edad'].str.lower().str.contains(edad_usuario.lower()) &
+            df['necesidades'].str.lower().str.contains(necesidad)
+        ]
+
+        if resultados.empty:
+            resultados = df[
+                df['tipo_piel'].str.lower().str.contains(tipo_usuario.lower()) &
+                df['necesidades'].str.lower().str.contains(necesidad)
+            ]
+
+        if resultados.empty:
+            resultados = df[
+                df['necesidades'].str.lower().str.contains(necesidad)
+            ]
+
+        if resultados.empty:
+            st.warning("😕 No encontramos productos exactos. Aquí tienes algunas opciones sugeridas:")
+            resultados = df.sample(n=min(3, len(df)))
+        else:
+            st.markdown("### 💖 Recomendaciones para ti:")
+
+        for _, row in resultados.iterrows():
+            with st.container():
+                st.markdown(f"#### 🧴 {row['nombre']} ({row['marca']})")
+                st.image(row['imagen'], width=200)
+                st.markdown(f"💸 **Precio:** {row['precio']}")
+                st.markdown(f"🔗 [Ver producto]({row['enlace']})")
+                st.markdown("---")
 
 st.markdown("---")
 st.markdown("Desarrollado por *Grecia García* con 💚 y ciencia para tu piel")
