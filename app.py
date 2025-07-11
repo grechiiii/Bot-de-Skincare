@@ -164,4 +164,30 @@ elif opcion == opciones[5]:
     if tipo:
         st.write(consejos.get(tipo, "Sin consejos."))
     else:
-        st.warning("Haz
+        st.warning("Haz primero el test para conocer tu tipo de piel.")
+
+elif opcion == opciones[6]:
+    st.subheader("🧪 Ingredientes importantes:")
+    st.markdown("""
+    - **Ácido hialurónico**: Hidratación profunda.  
+    - **Niacinamida**: Controla grasa y mejora textura.  
+    - **Retinol**: Antiarrugas y renovación celular.  
+    - **Vitamina C**: Ilumina y reduce manchas.  
+    """)
+
+elif opcion == opciones[7]:
+    st.subheader("🚫 Mitos comunes del skincare:")
+    st.markdown("""
+    ❌ El limón aclara la piel – Puede causar quemaduras.  
+    ❌ Si arde, está funcionando – Probablemente te está irritando.  
+    ❌ Solo las mujeres deben cuidarse la piel – ¡Todos debemos hacerlo!  
+    """)
+
+elif opcion == opciones[8]:
+    st.subheader("🆘 Ayuda general:")
+    st.markdown("""
+    1️⃣ Haz el test para saber tu tipo de piel.  
+    2️⃣ Consulta más información sobre tu tipo de piel.  
+    3️⃣ Crea tu rutina y pide recomendaciones.  
+    4️⃣ Si no sabes qué hacer, ¡sigue esta guía o habla con un dermatólogo/a! 💖
+    """)
