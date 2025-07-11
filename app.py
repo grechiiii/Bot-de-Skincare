@@ -2,9 +2,9 @@ import streamlit as st
 from PIL import Image
 
 # --- CONFIGURACIÓN GENERAL ---
-st.set_page_config(page_title="Skincare Bot 💖", layout="wide")
+st.set_page_config(page_title="Test de rutina facial", layout="wide")
 
-# --- COLORES Y ESTILOS PERSONALIZADOS ---
+# --- ESTILOS PERSONALIZADOS ---
 st.markdown("""
     <style>
     body {
@@ -22,106 +22,109 @@ st.markdown("""
         padding: 0.6em 1em;
         font-weight: bold;
     }
-    .card {
-        background-color: #ffffff;
-        border-radius: 20px;
-        padding: 20px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-    }
     </style>
 """, unsafe_allow_html=True)
 
 # --- ENCABEZADO ---
-st.title("🌿 Chatbot Skincare Natural")
-st.write("Explora recomendaciones personalizadas, ingredientes activos y mitos con un diseño amigable y visual ✨")
+st.image("https://www.isdin.com/img/routines/test_banner.jpg", use_column_width=True)
+st.title("🌿 Test de Rutina Facial")
+st.markdown("Descubre tu tipo de piel y encuentra productos ideales para ti ✨")
 
-# --- OPCIONES COMO CUADROS CON IMAGEN ---
-st.markdown("### Elige una categoría:")
+# --- TEST ---
+preguntas = [
+    {
+        "pregunta": "1. ¿Cómo luce tu piel al natural?",
+        "opciones": {
+            "a": "Lisa y con brillo natural, no oleosa.",
+            "b": "Algo opaca y seca.",
+            "c": "Me brilla toda la cara.",
+            "d": "Algunas zonas están brillosas y otras secas."
+        }
+    },
+    {
+        "pregunta": "2. ¿Cómo son tus poros?",
+        "opciones": {
+            "a": "Finos y poco visibles.",
+            "b": "Casi imperceptibles.",
+            "c": "Grandes y visibles en todo el rostro.",
+            "d": "Grandes solo en la frente, nariz y mentón."
+        }
+    },
+    {
+        "pregunta": "3. Al tocar tu piel, ¿cómo se siente?",
+        "opciones": {
+            "a": "Suave y lisa.",
+            "b": "Áspera, a veces descamada.",
+            "c": "Gruesa, con granitos.",
+            "d": "Una mezcla de seca y grasa según la zona."
+        }
+    },
+    {
+        "pregunta": "4. ¿Cómo se comporta tu piel durante el día?",
+        "opciones": {
+            "a": "Brilla ligeramente al final del día.",
+            "b": "Se mantiene opaca casi todo el día.",
+            "c": "Brilla mucho todo el día.",
+            "d": "Brilla en la zona T, pero no en las mejillas."
+        }
+    },
+    {
+        "pregunta": "5. ¿Sueles tener granitos o puntos negros?",
+        "opciones": {
+            "a": "Muy pocos o ninguno.",
+            "b": "Raramente o nunca.",
+            "c": "Frecuentemente.",
+            "d": "Algunas veces, según la zona."
+        }
+    },
+    {
+        "pregunta": "6. Para tu edad, ¿cómo ves tu piel?",
+        "opciones": {
+            "a": "Normal, sin muchas imperfecciones.",
+            "b": "Arrugas marcadas, se siente tirante.",
+            "c": "Pocas arrugas, pero piel grasa.",
+            "d": "Algunas líneas finas y zonas mixtas."
+        }
+    }
+]
 
-col1, col2, col3, col4 = st.columns(4)
+puntajes = {"a": 0, "b": 0, "c": 0, "d": 0}
+tipo_piel = {
+    "a": "NORMAL",
+    "b": "SECA",
+    "c": "GRASA",
+    "d": "MIXTA"
+}
 
-with col1:
-    if st.button("🧪 Tu tipo de piel"):
-        st.session_state.seccion = "test"
-    st.image("https://i.imgur.com/DxXGQxf.jpg", caption="Test de piel", use_column_width=True)
+st.subheader("Responde las siguientes preguntas:")
 
-with col2:
-    if st.button("🧴 Rutina ideal"):
-        st.session_state.seccion = "rutina"
-    st.image("https://i.imgur.com/pQZJGyi.jpg", caption="Rutinas", use_column_width=True)
+for i, q in enumerate(preguntas):
+    respuesta = st.radio(q["pregunta"], list(q["opciones"].values()), key=f"q{i}")
+    for letra, texto in q["opciones"].items():
+        if respuesta == texto:
+            puntajes[letra] += 1
 
-with col3:
-    if st.button("🍊 Ingredientes"):
-        st.session_state.seccion = "ingredientes"
-    st.image("https://i.imgur.com/5HJ6xFl.jpg", caption="Ingredientes clave", use_column_width=True)
+if st.button("Ver resultado"):
+    mayor = max(puntajes, key=puntajes.get)
+    resultado = tipo_piel[mayor]
+    st.success(f"Tu tipo de piel es: {resultado}")
+    imagenes = {
+        "NORMAL": "https://i.imgur.com/0iKXwra.jpg",
+        "SECA": "https://i.imgur.com/KcsIt8Q.jpg",
+        "GRASA": "https://i.imgur.com/REf90Y3.jpg",
+        "MIXTA": "https://i.imgur.com/nk6BoIO.jpg"
+    }
+    st.image(imagenes[resultado], caption=f"Piel {resultado}")
 
-with col4:
-    if st.button("🚫 Mitos"):
-        st.session_state.seccion = "mitos"
-    st.image("https://i.imgur.com/7A0WaIH.jpg", caption="Mitos comunes", use_column_width=True)
+    st.markdown("### Productos recomendados:")
+    if resultado == "GRASA":
+        st.image("https://i.imgur.com/zyEXiEF.jpg", caption="Gel limpiador seborregulador")
+    elif resultado == "SECA":
+        st.image("https://i.imgur.com/VIRKa8q.jpg", caption="Crema hidratante intensiva")
+    elif resultado == "MIXTA":
+        st.image("https://i.imgur.com/VxQxa5p.jpg", caption="Hidratante ligera para zonas mixtas")
+    elif resultado == "NORMAL":
+        st.image("https://i.imgur.com/Fm9ZV6g.jpg", caption="Cuidado básico para piel equilibrada")
 
-# --- CONTENIDO SEGÚN ELECCIÓN ---
-
-if 'seccion' not in st.session_state:
-    st.session_state.seccion = None
-
-if st.session_state.seccion == "test":
-    st.header("💚 Conoce tu tipo de piel")
-    st.write("Responde estas preguntas y el bot te dirá tu tipo de piel aproximado:")
-
-    agua = st.radio("¿Tu piel se siente tirante después de lavarla solo con agua?", ["Sí", "No"])
-    brillo = st.radio("¿Notas brillo en tu piel durante el día?", ["Mucho", "Un poco", "Nada"])
-    granos = st.radio("¿Tienes granitos o espinillas con frecuencia?", ["Sí", "A veces", "No"])
-    zonas = st.radio("¿Sientes que algunas zonas son secas y otras grasas?", ["Sí", "No"])
-
-    if st.button("Ver resultado"):
-        if agua == "Sí" and brillo == "Nada":
-            tipo = "Piel seca"
-        elif zonas == "Sí":
-            tipo = "Piel mixta"
-        elif brillo == "Mucho" or granos == "Sí":
-            tipo = "Piel grasa"
-        else:
-            tipo = "Piel normal"
-
-        st.success(f"Tu tipo de piel es: {tipo}")
-        st.image("https://i.imgur.com/WJYZxP6.png", caption=f"{tipo}")
-
-elif st.session_state.seccion == "rutina":
-    st.header("🧴 Rutina recomendada")
-    st.write("Aquí una rutina básica según tu tipo de piel:")
-
-    st.markdown("""
-    - **Limpieza suave:** mañana y noche.
-    - **Tónico hidratante:** sin alcohol.
-    - **Suero o esencia:** según tu necesidad.
-    - **Hidratante ligera o rica:** dependiendo tu piel.
-    - **Protector solar:** ¡todos los días!
-    """)
-    st.video("https://www.youtube.com/watch?v=7cUWe_lz0og")
-
-elif st.session_state.seccion == "ingredientes":
-    st.header("🍊 Ingredientes activos recomendados")
-    st.markdown("""
-    - **Ácido hialurónico:** Hidratación profunda 💧
-    - **Niacinamida:** Reduce poros y grasa 🌿
-    - **Retinol:** Renovación y anti edad ✨
-    - **Vitamina C:** Ilumina y unifica 🌞
-    - **Ácido salicílico:** Ideal para acné 🔬
-    """)
-    st.image("https://i.imgur.com/5HJ6xFl.jpg", use_column_width=True)
-
-elif st.session_state.seccion == "mitos":
-    st.header("🚫 Mitos del skincare que debes olvidar")
-    st.markdown("""
-    ❌ *Si arde es que funciona* → No, puede ser irritación.  
-    ❌ *El limón aclara la piel* → ¡Peligroso! Puede mancharte.  
-    ❌ *Solo las mujeres deben cuidarse la piel* → ¡Falso!  
-    ❌ *Más caro es mejor* → Lo importante es que sea adecuado a ti.  
-    """)
-    st.image("https://i.imgur.com/7A0WaIH.jpg", use_column_width=True)
-
-# --- PIE DE PÁGINA ---
 st.markdown("---")
 st.markdown("Desarrollado por *Grecia García* con 💚 y ciencia para tu piel")
