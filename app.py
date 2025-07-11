@@ -31,7 +31,7 @@ st.markdown("""
 # --- Cargar base de datos ---
 @st.cache_data
 def cargar_datos():
-    return pd.read_csv("productos_skincare.csv")
+    return pd.read_csv("productos_chatbot_final.csv")
 
 df = cargar_datos()
 
