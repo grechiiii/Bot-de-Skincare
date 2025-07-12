@@ -140,15 +140,14 @@ else:
 
         for _, row in resultados.iterrows():
             with st.container():
-                st.markdown("""
+                st.markdown(f"""
                     <div class="producto-card">
-                        <img src="{}" width="150">
-                        <h4>{}</h4>
-                        <p><strong>Marca:</strong> {}<br>
-                        <strong>Precio:</strong> S/ {}</p>
-                        <a href="{}" target="_blank">Ver producto 🔗</a>
+                        <h4>{row['nombre']}</h4>
+                        <p><strong>Marca:</strong> {row['marca']}<br>
+                        <strong>Precio:</strong> {row['precio']}</p>
+                        <a href="{row['enlace']}" target="_blank">Ver producto 🔗</a>
                     </div>
-                """.format(row['imagen'], row['nombre'], row['marca'], row['precio'], row['enlace']), unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
 
         # --- Mitos del skincare ---
         st.markdown("### 🚫 Mitos comunes del skincare")
