@@ -1,18 +1,20 @@
 # --- Librerías ---
 import streamlit as st
 import pandas as pd
-import random
+import time
 
-# --- Estilo general ---
+# --- Configuración general ---
 st.set_page_config(page_title="Tu Rutina Skincare", layout="wide")
+
+# --- Estilos personalizados ---
 st.markdown("""
     <style>
     body {
-        background-color: #E6F2EA;
+        background-color: #FCEEF5;
     }
     .stButton>button {
-        background-color: #A2D5C6;
-        color: black;
+        background-color: #FFB6C1;
+        color: white;
         font-weight: bold;
         border-radius: 10px;
         padding: 10px 20px;
@@ -28,21 +30,27 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- Cargar base de datos ---
+# --- Sidebar cute ---
+st.sidebar.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/gatito%20skincare.jpg", width=180)
+st.sidebar.markdown("### ✨ ¡Bienvenida!")
+st.sidebar.markdown("Este bot te ayudará a encontrar tu rutina ideal de skincare.\n1. Ingresa tu nombre\n2. Haz el test\n3. Descubre productos perfectos para ti")
+
+# --- Cargar datos ---
 @st.cache_data
+
 def cargar_datos():
     return pd.read_csv("productos_chatbot_final.csv")
 
 df = cargar_datos()
 
-# --- Ventana emergente al inicio ---
+# --- Ventana emergente tipo bot ---
 if 'nombre' not in st.session_state:
     with st.form("info_usuario"):
-        st.image("https://i.imgur.com/xzfk4of.jpg", use_column_width=True)
-        st.markdown("### Tu piel es única ✨")
+        st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/49725ca650d59cbad0115e87f0325a96.jpg", use_container_width=True)
+        st.markdown("### 🌸 Tu piel es especial")
         st.markdown("Descubre tu rutina ideal con solo unos clics")
         nombre = st.text_input("¿Cuál es tu nombre?")
-        edad = st.selectbox("¿Qué rango de edad tienes?", ["15-25", "26-35", "36-50", "50+"])
+        edad = st.selectbox("Selecciona tu rango de edad", ["15-25", "26-35", "36-50", "50+"])
         continuar = st.form_submit_button("Comenzar ✨")
         if continuar and nombre:
             st.session_state.nombre = nombre
@@ -50,9 +58,8 @@ if 'nombre' not in st.session_state:
             st.rerun()
 else:
     st.markdown(f"## Hola, {st.session_state.nombre} 🌸")
-    st.markdown("### Empecemos conociendo tu tipo de piel:")
+    st.markdown("### Vamos a conocerte mejor con este test de piel 💎")
 
-    # --- Preguntas del test ---
     preguntas = [
         ("1. ¿Cómo luce tu piel al natural?", [
             ("a", "Lisa y con brillo natural, no oleosa."),
@@ -94,15 +101,17 @@ else:
             for letra, texto in opciones:
                 if r == texto:
                     puntajes[letra] += 1
-        enviar = st.form_submit_button("Ver mi tipo de piel 💖")
+        enviar = st.form_submit_button("Ver mi tipo de piel 💕")
 
     if enviar:
+        with st.spinner("Analizando tus respuestas... 🤖"):
+            time.sleep(2)
         tipo = max(puntajes, key=puntajes.get)
         tipos = {
-            "a": ("NORMAL", "https://i.imgur.com/Sdu3ZZN.jpg"),
-            "b": ("SECA", "https://i.imgur.com/vvDse8w.jpg"),
-            "c": ("GRASA", "https://i.imgur.com/5BknY1M.jpg"),
-            "d": ("MIXTA", "https://i.imgur.com/RxDUnNy.jpg")
+            "a": ("NORMAL", "https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/nioormal.jpg"),
+            "b": ("SECA", "https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/pielseca.jpg"),
+            "c": ("GRASA", "https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/cc459e606dd2072aca33f94a274829cf.jpg"),
+            "d": ("MIXTA", "https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/mixta.jpg")
         }
         tipo_piel, img = tipos[tipo]
         st.session_state.tipo_piel = tipo_piel
@@ -110,65 +119,50 @@ else:
         st.image(img, width=300)
         st.success(f"Tu tipo de piel es: **{tipo_piel}**")
 
-        # --- Rutina ideal ---
-        st.markdown("### 🧴 Tu rutina ideal")
         rutinas = {
             "SECA": "Limpieza suave → Tónico hidratante → Sérum → Crema rica → Protector solar",
             "GRASA": "Gel limpiador → Tónico matificante → Sérum seborregulador → Hidratante ligera → Protector solar oil free",
             "MIXTA": "Limpieza equilibrada → Tónico suave → Sérum → Hidratante mixta → Protector solar",
             "NORMAL": "Limpieza básica → Hidratante ligera → Protector solar"
         }
-        st.info(rutinas[tipo_piel])
 
-        # --- Necesidades ---
-        st.markdown("### 💡 ¿Qué necesitas?")
-        necesidades = ["Acné", "Hidratación", "Manchas", "Arrugas", "Sensibilidad"]
-        necesidad = st.selectbox("Selecciona una necesidad", necesidades)
+        with st.expander("💖 Tu rutina ideal"):
+            st.info(rutinas[tipo_piel])
 
-        # --- Recomendaciones ---
-        st.markdown("### 🎯 Productos recomendados")
-        resultados = df[
-            df['tipo_piel'].str.lower().str.contains(tipo_piel.lower()) &
-            df['edad'].str.lower().str.contains(st.session_state.edad.lower()) &
-            df['necesidades'].str.lower().str.contains(necesidad.lower())
-        ]
-        if resultados.empty:
-            resultados = df[df['necesidades'].str.lower().str.contains(necesidad.lower())]
-        if resultados.empty:
-            st.warning("No encontramos productos exactos, pero aquí tienes sugerencias aleatorias")
-            resultados = df.sample(min(3, len(df)))
-
-        for _, row in resultados.iterrows():
-            with st.container():
+        with st.expander("🛎9 Productos recomendados"):
+            st.toast("Buscando productos para ti...", icon="💼")
+            resultados = df[
+                df['tipo_piel'].str.lower().str.contains(tipo_piel.lower()) &
+                df['edad'].str.lower().str.contains(st.session_state.edad.lower())
+            ]
+            if resultados.empty:
+                resultados = df.sample(min(3, len(df)))
+            for _, row in resultados.iterrows():
                 st.markdown(f"""
-                    <div class="producto-card">
+                    <div class='producto-card'>
                         <h4>{row['nombre']}</h4>
                         <p><strong>Marca:</strong> {row['marca']}<br>
-                        <strong>Precio:</strong> {row['precio']}</p>
+                        <strong>Precio:</strong> S/ {row['precio']}</p>
                         <a href="{row['enlace']}" target="_blank">Ver producto 🔗</a>
                     </div>
                 """, unsafe_allow_html=True)
 
-        # --- Mitos del skincare ---
-        st.markdown("### 🚫 Mitos comunes del skincare")
-        st.error("❌ El limón aclara la piel – Puede causar quemaduras.")
-        st.error("❌ Si arde, está funcionando – Probablemente te está irritando.")
-        st.error("❌ Solo las mujeres deben cuidarse la piel – ¡Todos debemos hacerlo!")
+        with st.expander("🚫 Mitos comunes del skincare"):
+            st.error("❌ El limón aclara la piel – Puede causar quemaduras.")
+            st.error("❌ Si arde, está funcionando – Probablemente te está irritando.")
+            st.error("❌ Solo las mujeres deben cuidarse la piel – ¡Todos debemos hacerlo!")
 
-        # --- Info adicional tipos de piel ---
-        st.markdown("### 📚 Más información sobre tu tipo de piel")
-        if tipo_piel == "SECA":
-            st.info("La piel seca produce menos sebo de lo normal, puede sentirse áspera, tirante y con escamas. Requiere hidratación profunda y productos ricos en lípidos.")
-        elif tipo_piel == "GRASA":
-            st.info("La piel grasa produce un exceso de sebo, lo que causa brillo, poros dilatados y tendencia al acné. Necesita limpieza constante y productos oil-free.")
-        elif tipo_piel == "MIXTA":
-            st.info("Tiene zonas grasas (zona T) y otras secas. Requiere productos equilibrantes y cuidado personalizado por zonas.")
-        else:
-            st.info("La piel normal es equilibrada, ni muy grasa ni muy seca. Solo requiere una rutina básica de mantenimiento.")
+        with st.expander("📖 Más información sobre tu tipo de piel"):
+            if tipo_piel == "SECA":
+                st.info("La piel seca produce menos sebo de lo normal, puede sentirse áspera, tirante y con escamas. Requiere hidratación profunda y productos ricos en lípidos.")
+            elif tipo_piel == "GRASA":
+                st.info("La piel grasa produce un exceso de sebo, lo que causa brillo, poros dilatados y tendencia al acné. Necesita limpieza constante y productos oil-free.")
+            elif tipo_piel == "MIXTA":
+                st.info("Tiene zonas grasas (zona T) y otras secas. Requiere productos equilibrantes y cuidado personalizado por zonas.")
+            else:
+                st.info("La piel normal es equilibrada, ni muy grasa ni muy seca. Solo requiere una rutina básica de mantenimiento.")
 
-        # --- Videos ---
-        st.markdown("### 🎥 Aprende más sobre skincare")
-        st.video("https://www.youtube.com/watch?v=vSKVbp1jepc")
-        st.markdown("### 🎬 Ejemplos de publicidad")
-        st.video("https://www.youtube.com/watch?v=kw8UqeBnfxY")
-        st.video("https://www.youtube.com/watch?v=3dfQo9b4EKI")
+        with st.expander("🎥 Videos de skincare y publicidad"):
+            st.video("https://www.youtube.com/watch?v=vSKVbp1jepc")
+            st.video("https://www.youtube.com/watch?v=kw8UqeBnfxY")
+            st.video("https://www.youtube.com/watch?v=3dfQo9b4EKI")
