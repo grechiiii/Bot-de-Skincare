@@ -173,6 +173,8 @@ if 'tipo_piel' in st.session_state and 'edad' in st.session_state and 'diario' i
             st.warning("No encontramos coincidencias exactas, pero aquí tienes algunas sugerencias:")
             resultados = df.sample(min(3, len(df)))
 
+        resultados = resultados.drop_duplicates(subset=['nombre', 'marca', 'precio', 'enlace'])
+
         for _, row in resultados.iterrows():
             st.markdown(f"""
                 <div class='producto-card'>
