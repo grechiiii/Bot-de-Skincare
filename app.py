@@ -179,7 +179,19 @@ else:
                 st.info("La piel normal es equilibrada, ni muy grasa ni muy seca. Solo requiere una rutina básica de mantenimiento.")
                 st.write("- Usa protector solar todos los días.")
                 st.write("- Mantén una rutina constante.")
+                
+# --- Mitos comunes del skincare ---
+        with st.expander("🚫 Mitos comunes del skincare"):
+            st.error("❌ El limón aclara la piel – Puede causar quemaduras.")
+            st.error("❌ Si arde, está funcionando – Probablemente te está irritando.")
+            st.error("❌ Solo las mujeres deben cuidarse la piel – ¡Todos debemos hacerlo!")
 
+        # --- Videos de skincare y publicidad ---
+        with st.expander("🎥 Videos de skincare y publicidad"):
+            st.video("https://www.youtube.com/watch?v=vSKVbp1jepc")
+            st.video("https://www.youtube.com/watch?v=kw8UqeBnfxY")
+            st.video("https://www.youtube.com/watch?v=3dfQo9b4EKI")
+            
         feedback = st.text_area("💬 ¿Qué te pareció tu rutina? ¿Te gustaría que mejoremos algo?", placeholder="Me encantó, pero me gustaría que incluyera más opciones naturales...")
         if feedback:
             st.success("¡Gracias por tu comentario! 💌 Nos alegra ayudarte ✨")
