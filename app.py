@@ -144,34 +144,30 @@ else:
         st.image(img, width=300)
         st.success(f"Tu tipo de piel es: **{tipo_piel}**")
 
-        # Sección de productos recomendados con búsqueda por necesidad
+# --- Sección de productos recomendados ---
 with st.expander("🧴 Productos recomendados solo para ti"):
     st.toast("Buscando productos para ti...", icon="💼")
     tipo = st.session_state.tipo_piel.lower()
     edad = st.session_state.edad.lower()
-    necesidad = st.session_state.diario.lower()  # esto recoge lo que escribió el usuario
+    necesidad = st.session_state.diario.lower()
 
-    # Búsqueda estricta: tipo + edad + necesidad
     resultados = df[
         df['tipo_piel'].str.lower().str.contains(tipo) &
         df['edad'].str.lower().str.contains(edad) &
         df['necesidades'].str.lower().str.contains(necesidad)
     ]
 
-    # Búsqueda intermedia: tipo + necesidad
     if resultados.empty:
         resultados = df[
             df['tipo_piel'].str.lower().str.contains(tipo) &
             df['necesidades'].str.lower().str.contains(necesidad)
         ]
 
-    # Búsqueda mínima: solo necesidad
     if resultados.empty:
         resultados = df[
             df['necesidades'].str.lower().str.contains(necesidad)
         ]
 
-    # Recomendación aleatoria
     if resultados.empty:
         st.warning("No encontramos coincidencias exactas, pero aquí tienes algunas sugerencias:")
         resultados = df.sample(min(3, len(df)))
@@ -185,49 +181,38 @@ with st.expander("🧴 Productos recomendados solo para ti"):
                 <a href="{row['enlace']}" target="_blank">Ver producto 🔗</a>
             </div>
         """, unsafe_allow_html=True)
-        
-            for _, row in resultados.iterrows():
-                st.markdown(f"""
-                    <div class='producto-card'>
-                        <h4>{row['nombre']}</h4>
-                        <p><strong>Marca:</strong> {row['marca']}<br>
-                        <strong>Precio:</strong> S/ {row['precio']}</p>
-                        <a href="{row['enlace']}" target="_blank">Ver producto 🔗</a>
-                    </div>
-                """, unsafe_allow_html=True)
 
-        with st.expander("📖 Más información sobre tu tipo de piel"):
-            if tipo_piel == "SECA":
-                st.info("La piel seca produce menos sebo de lo normal, puede sentirse áspera, tirante y con escamas. Requiere hidratación profunda y productos ricos en lípidos.")
-                st.write("- Usa mascarillas hidratantes semanales.")
-                st.write("- Evita duchas muy calientes.")
-            elif tipo_piel == "GRASA":
-                st.info("La piel grasa produce un exceso de sebo, lo que causa brillo, poros dilatados y tendencia al acné. Necesita limpieza constante y productos oil-free.")
-                st.write("- No frotes tu piel con fuerza.")
-                st.write("- Usa papel secante si brillas durante el día.")
-            elif tipo_piel == "MIXTA":
-                st.info("Tiene zonas grasas (zona T) y otras secas. Requiere productos equilibrantes y cuidado personalizado por zonas.")
-                st.write("- Usa productos diferentes según la zona.")
-                st.write("- No olvides la hidratación aunque tengas partes grasas.")
-            else:
-                st.info("La piel normal es equilibrada, ni muy grasa ni muy seca. Solo requiere una rutina básica de mantenimiento.")
-                st.write("- Usa protector solar todos los días.")
-                st.write("- Mantén una rutina constante.")
-                
-# --- Mitos comunes del skincare ---
-        with st.expander("🚫 Mitos comunes del skincare"):
-            st.error("❌ El limón aclara la piel – Puede causar quemaduras.")
-            st.error("❌ Si arde, está funcionando – Probablemente te está irritando.")
-            st.error("❌ Solo las mujeres deben cuidarse la piel – ¡Todos debemos hacerlo!")
+    with st.expander("📖 Más información sobre tu tipo de piel"):
+        if st.session_state.tipo_piel == "SECA":
+            st.info("La piel seca produce menos sebo de lo normal, puede sentirse áspera, tirante y con escamas. Requiere hidratación profunda y productos ricos en lípidos.")
+            st.write("- Usa mascarillas hidratantes semanales.")
+            st.write("- Evita duchas muy calientes.")
+        elif st.session_state.tipo_piel == "GRASA":
+            st.info("La piel grasa produce un exceso de sebo, lo que causa brillo, poros dilatados y tendencia al acné. Necesita limpieza constante y productos oil-free.")
+            st.write("- No frotes tu piel con fuerza.")
+            st.write("- Usa papel secante si brillas durante el día.")
+        elif st.session_state.tipo_piel == "MIXTA":
+            st.info("Tiene zonas grasas (zona T) y otras secas. Requiere productos equilibrantes y cuidado personalizado por zonas.")
+            st.write("- Usa productos diferentes según la zona.")
+            st.write("- No olvides la hidratación aunque tengas partes grasas.")
+        else:
+            st.info("La piel normal es equilibrada, ni muy grasa ni muy seca. Solo requiere una rutina básica de mantenimiento.")
+            st.write("- Usa protector solar todos los días.")
+            st.write("- Mantén una rutina constante.")
 
-        # --- Videos de skincare y publicidad ---
-        with st.expander("🎥 Videos de skincare y publicidad"):
-            st.video("https://www.youtube.com/watch?v=vSKVbp1jepc")
-            st.video("https://www.youtube.com/watch?v=kw8UqeBnfxY")
-            st.video("https://www.youtube.com/watch?v=3dfQo9b4EKI")
-            
-        feedback = st.text_area("💬 ¿Qué te pareció tu rutina? ¿Te gustaría que mejoremos algo?", placeholder="Me encantó, pero me gustaría que incluyera más opciones naturales...")
-        if feedback:
-            st.success("¡Gracias por tu comentario! 💌 Nos alegra ayudarte ✨")
+    with st.expander("🚫 Mitos comunes del skincare"):
+        st.error("❌ El limón aclara la piel – Puede causar quemaduras.")
+        st.error("❌ Si arde, está funcionando – Probablemente te está irritando.")
+        st.error("❌ Solo las mujeres deben cuidarse la piel – ¡Todos debemos hacerlo!")
 
-        st.button("🔄 Hacer el test de nuevo", on_click=lambda: st.session_state.clear())
+    with st.expander("🎥 Videos de skincare y publicidad"):
+        st.video("https://www.youtube.com/watch?v=vSKVbp1jepc")
+        st.video("https://www.youtube.com/watch?v=kw8UqeBnfxY")
+        st.video("https://www.youtube.com/watch?v=3dfQo9b4EKI")
+
+    feedback = st.text_area("💬 ¿Qué te pareció tu rutina? ¿Te gustaría que mejoremos algo?", placeholder="Me encantó, pero me gustaría que incluyera más opciones naturales...")
+    if feedback:
+        st.success("¡Gracias por tu comentario! 💌 Nos alegra ayudarte ✨")
+
+    st.button("🔄 Hacer el test de nuevo", on_click=lambda: st.session_state.clear())
+
