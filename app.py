@@ -47,7 +47,7 @@ if 'nombre' not in st.session_state:
         if continuar and nombre:
             st.session_state.nombre = nombre
             st.session_state.edad = edad
-            st.experimental_rerun()
+            st.rerun()
 else:
     st.markdown(f"## Hola, {st.session_state.nombre} 🌸")
     st.markdown("### Empecemos conociendo tu tipo de piel:")
