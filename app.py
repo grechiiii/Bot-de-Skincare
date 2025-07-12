@@ -13,8 +13,21 @@ st.markdown("""
     html, body, .stApp {
         background-color: #fceff8;
         font-family: 'Quicksand', sans-serif;
-        color: #333333;
+        color: #111111 !important;
     }
+
+    * {
+        color: #111111 !important;
+    }
+
+    h1, h2, h3, h4, h5, h6, p, span, div {
+        color: #111111 !important;
+    }
+
+    .stMarkdown, .stTextInput, .stTextArea, .stSelectbox, .stRadio, .stExpander {
+        color: #111111 !important;
+    }
+
     .stButton>button {
         background-color: #FFB6C1;
         color: white !important;
@@ -24,19 +37,23 @@ st.markdown("""
         margin: 5px;
         transition: 0.2s;
     }
+
     .stButton>button:hover {
         background-color: #ffa0c5;
         transform: scale(1.05);
     }
+
     .producto-card {
         border-radius: 15px;
         padding: 1rem;
         background-color: white;
+        color: #111111;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         margin-bottom: 20px;
     }
+
     input, textarea, select {
-        color: #333 !important;
+        color: #111111 !important;
         background-color: #fff0f6 !important;
     }
     </style>
@@ -54,7 +71,7 @@ def cargar_datos():
 
 df = cargar_datos()
 
-# --- Ventana emergente tipo bot ---
+# --- Formulario inicial ---
 if 'nombre' not in st.session_state:
     with st.form("info_usuario"):
         st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/49725ca650d59cbad0115e87f0325a96.jpg", use_container_width=True)
@@ -84,7 +101,7 @@ else:
             ("b", "Casi imperceptibles."),
             ("c", "Grandes y visibles en todo el rostro."),
             ("d", "Grandes solo en la frente, nariz y mentón.")]),
-        ("3. Al tocar tu piel, ¿cómo se siente?", [
+        ("3. Al tocar tu piel, ¿como se siente?", [
             ("a", "Suave y lisa."),
             ("b", "Áspera, a veces descamada."),
             ("c", "Gruesa, con granitos."),
@@ -99,7 +116,7 @@ else:
             ("b", "Raramente o nunca."),
             ("c", "Frecuentemente."),
             ("d", "Algunas veces, según la zona.")]),
-        ("6. Para tu edad, ¿cómo ves tu piel?", [
+        ("6. Para tu edad, ¿como ves tu piel?", [
             ("a", "Normal, sin muchas imperfecciones."),
             ("b", "Arrugas marcadas, se siente tirante."),
             ("c", "Pocas arrugas, pero piel grasa."),
@@ -133,62 +150,57 @@ else:
         st.success(f"Tu tipo de piel es: **{tipo_piel}**")
 
         rutinas = {
-            "SECA": [
-                "🧼 Limpieza suave con productos sin sulfatos",
-                "💧 Tónico hidratante con ácido hialurónico",
-                "💎 Sérum nutritivo con ceramidas",
-                "🧴 Crema rica con manteca de karité",
-                "🌞 Protector solar hidratante"
-            ],
-            "GRASA": [
-                "🧼 Gel limpiador purificante",
-                "💦 Tónico matificante con niacinamida",
-                "💧 Sérum seborregulador",
-                "🧴 Hidratante ligera en gel",
-                "🌞 Protector solar oil-free"
-            ],
-            "MIXTA": [
-                "🧼 Limpieza equilibrante",
-                "💧 Tónico suave",
-                "💎 Sérum adaptado a zonas",
-                "🧴 Hidratante combinada",
-                "🌞 Protector solar ligero"
-            ],
-            "NORMAL": [
-                "🧼 Limpieza básica",
-                "💧 Hidratante ligera",
-                "🌞 Protector solar diario"
-            ]
+            "SECA": "Limpieza suave → Tónico hidratante → Sérum → Crema rica → Protector solar",
+            "GRASA": "Gel limpiador → Tónico matificante → Sérum seborregulador → Hidratante ligera → Protector solar oil free",
+            "MIXTA": "Limpieza equilibrada → Tónico suave → Sérum → Hidratante mixta → Protector solar",
+            "NORMAL": "Limpieza básica → Hidratante ligera → Protector solar"
         }
 
-        with st.expander("💖 Tu rutina ideal"):
-            st.write("Aquí tienes una rutina sugerida para cuidar tu piel diariamente:")
-            for paso in rutinas[tipo_piel]:
-                st.markdown(f"- {paso}")
-            st.text_area("💡 ¿Qué agregarías a esta rutina?", placeholder="Tal vez un contorno de ojos...")
+        with st.expander("💖 Tu rutina ideal (detalles y tips)"):
+            st.info(rutinas[tipo_piel])
+            st.markdown("- Aplica los productos con movimientos suaves, sin frotar.")
+            st.markdown("- Usa protector solar incluso si está nublado.")
+            st.markdown("- Cambia de almohada frecuentemente para evitar brotes.")
 
-        with st.expander("🚫 Mitos comunes del skincare"):
-            st.write("¡Desmitifiquemos algunos errores comunes!")
-            st.warning("❌ El limón aclara la piel – Puede causar quemaduras.")
-            st.warning("❌ Si arde, está funcionando – Probablemente te está irritando.")
-            st.warning("❌ Solo las mujeres deben cuidarse – ¡Todos debemos hacerlo!")
-            st.text_input("¿Has escuchado otro mito que quieras desmentir?")
+        with st.expander("📣 Mitos comunes del skincare"):
+            st.error("❌ El limón aclara la piel – Puede causar quemaduras.")
+            st.error("❌ Si arde, está funcionando – Probablemente te está irritando.")
+            st.error("❌ Solo las mujeres deben cuidarse la piel – ¡Todos debemos hacerlo!")
 
-        with st.expander("📖 Aprende más sobre tu tipo de piel"):
-            explicaciones = {
-                "SECA": "La piel seca produce menos sebo y puede sentirse áspera o tirante. Se beneficia de ingredientes como ácido hialurónico, aceites naturales y ceramidas.",
-                "GRASA": "Produce más sebo del necesario, provocando brillo, poros dilatados y acné. Ingredientes clave: ácido salicílico, niacinamida, zinc.",
-                "MIXTA": "Tiene zonas secas y grasas. Requiere cuidado específico por zonas, alternando productos según necesidad.",
-                "NORMAL": "Está en equilibrio. Solo necesita mantenimiento con limpieza, hidratación y protección solar."
+        with st.expander("📚 Conoce más sobre tu tipo de piel"):
+            descripciones = {
+                "SECA": "Produce menos sebo, se siente tirante o escamosa. Necesita hidratación rica en lípidos y evitar jabones agresivos.",
+                "GRASA": "Produce exceso de sebo, con brillo constante. Usa limpiadores suaves y evita productos oclusivos.",
+                "MIXTA": "Tiene zonas grasas (zona T) y otras secas. Combina productos según las zonas.",
+                "NORMAL": "Equilibrada y sin problemas frecuentes. Mantenla con una rutina simple y constante."
             }
-            st.info(explicaciones[tipo_piel])
-            st.selectbox("¿Te gustaría ver ingredientes recomendados?", ["Sí", "No"])
+            st.write(descripciones[tipo_piel])
 
         with st.expander("🎥 Videos de skincare y publicidad"):
             st.video("https://www.youtube.com/watch?v=vSKVbp1jepc")
             st.video("https://www.youtube.com/watch?v=kw8UqeBnfxY")
 
-        feedback = st.text_area("💬 ¿Qué te pareció tu rutina? ¿Te gustaría que mejoremos algo?")
+        st.markdown("### 💬 Comparte tu experiencia")
+        feedback = st.text_area("¿Qué te pareció tu rutina? ¿Te gustaría que mejoremos algo?", placeholder="Me encantó, pero podría tener productos naturales...")
         if feedback:
             st.success("¡Gracias por tu comentario! 💌")
+
+        with st.expander("📦 Productos recomendados"):
+            st.toast("Buscando productos para ti...", icon="💼")
+            resultados = df[
+                df['tipo_piel'].str.lower().str.contains(tipo_piel.lower()) &
+                df['edad'].str.lower().str.contains(st.session_state.edad.lower())
+            ]
+            if resultados.empty:
+                resultados = df.sample(min(3, len(df)))
+            for _, row in resultados.iterrows():
+                st.markdown(f"""
+                    <div class='producto-card'>
+                        <h4>{row['nombre']}</h4>
+                        <p><strong>Marca:</strong> {row['marca']}<br>
+                        <strong>Precio:</strong> S/ {row['precio']}</p>
+                        <a href="{row['enlace']}" target="_blank">Ver producto 🔗</a>
+                    </div>
+                """, unsafe_allow_html=True)
+
 
