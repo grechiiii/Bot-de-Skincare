@@ -117,12 +117,71 @@ else:
 
     puntajes = {"a": 0, "b": 0, "c": 0, "d": 0}
     with st.form("test_piel"):
-        for p, opciones in preguntas:
-            st.markdown(f"**{p}**")
-            r = st.radio("", [texto for _, texto in opciones], key=p)
+        for i, (pregunta, opciones) in enumerate(preguntas):
+            st.markdown(f"**{pregunta}**")
+            respuesta = st.radio("", [texto for _, texto in opciones], key=f"preg_{i}")
             for letra, texto in opciones:
-                if r == texto:
+                if respuesta == texto:
                     puntajes[letra] += 1
         enviar = st.form_submit_button("Ver mi tipo de piel 💕")
 
+    if enviar:
+        st.session_state.puntajes = puntajes
+        st.rerun()
 
+    if 'puntajes' in st.session_state and 'tipo_piel' not in st.session_state:
+        puntajes = st.session_state.puntajes
+        tipo = max(puntajes, key=puntajes.get)
+        tipos = {
+            "a": ("NORMAL", "https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/nioormal.jpg"),
+            "b": ("SECA", "https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/pielseca.jpg"),
+            "c": ("GRASA", "https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/cc459e606dd2072aca33f94a274829cf.jpg"),
+            "d": ("MIXTA", "https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/mixta.jpg")
+        }
+        tipo_piel, img = tipos[tipo]
+        st.session_state.tipo_piel = tipo_piel
+
+        st.image(img, width=300)
+        st.success(f"Tu tipo de piel es: **{tipo_piel}**")
+
+        with st.expander("🧴 Productos recomendados para ti"):
+            st.toast("Buscando productos para ti...", icon="💼")
+            resultados = df[
+                df['tipo_piel'].str.lower().str.contains(tipo_piel.lower()) &
+                df['edad'].str.lower().str.contains(st.session_state.edad.lower())
+            ]
+            if resultados.empty:
+                resultados = df.sample(min(3, len(df)))
+            for _, row in resultados.iterrows():
+                st.markdown(f"""
+                    <div class='producto-card'>
+                        <h4>{row['nombre']}</h4>
+                        <p><strong>Marca:</strong> {row['marca']}<br>
+                        <strong>Precio:</strong> S/ {row['precio']}</p>
+                        <a href="{row['enlace']}" target="_blank">Ver producto 🔗</a>
+                    </div>
+                """, unsafe_allow_html=True)
+
+        with st.expander("📖 Más información sobre tu tipo de piel"):
+            if tipo_piel == "SECA":
+                st.info("La piel seca produce menos sebo de lo normal, puede sentirse áspera, tirante y con escamas. Requiere hidratación profunda y productos ricos en lípidos.")
+                st.write("- Usa mascarillas hidratantes semanales.")
+                st.write("- Evita duchas muy calientes.")
+            elif tipo_piel == "GRASA":
+                st.info("La piel grasa produce un exceso de sebo, lo que causa brillo, poros dilatados y tendencia al acné. Necesita limpieza constante y productos oil-free.")
+                st.write("- No frotes tu piel con fuerza.")
+                st.write("- Usa papel secante si brillas durante el día.")
+            elif tipo_piel == "MIXTA":
+                st.info("Tiene zonas grasas (zona T) y otras secas. Requiere productos equilibrantes y cuidado personalizado por zonas.")
+                st.write("- Usa productos diferentes según la zona.")
+                st.write("- No olvides la hidratación aunque tengas partes grasas.")
+            else:
+                st.info("La piel normal es equilibrada, ni muy grasa ni muy seca. Solo requiere una rutina básica de mantenimiento.")
+                st.write("- Usa protector solar todos los días.")
+                st.write("- Mantén una rutina constante.")
+
+        feedback = st.text_area("💬 ¿Qué te pareció tu rutina? ¿Te gustaría que mejoremos algo?", placeholder="Me encantó, pero me gustaría que incluyera más opciones naturales...")
+        if feedback:
+            st.success("¡Gracias por tu comentario! 💌 Nos alegra ayudarte ✨")
+
+        st.button("🔄 Hacer el test de nuevo", on_click=lambda: st.session_state.clear())
