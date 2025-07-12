@@ -145,42 +145,43 @@ else:
         st.success(f"Tu tipo de piel es: **{tipo_piel}**")
 
 # --- Sección de productos recomendados ---
-with st.expander("🧴 Productos recomendados solo para ti"):
-    st.toast("Buscando productos para ti...", icon="💼")
-    tipo = st.session_state.tipo_piel.lower()
-    edad = st.session_state.edad.lower()
-    necesidad = st.session_state.diario.lower()
+if 'tipo_piel' in st.session_state and 'edad' in st.session_state and 'diario' in st.session_state:
+    with st.expander("🧴 Productos recomendados solo para ti"):
+        st.toast("Buscando productos para ti...", icon="💼")
+        tipo = st.session_state.tipo_piel.lower()
+        edad = st.session_state.edad.lower()
+        necesidad = st.session_state.diario.lower()
 
-    resultados = df[
-        df['tipo_piel'].str.lower().str.contains(tipo) &
-        df['edad'].str.lower().str.contains(edad) &
-        df['necesidades'].str.lower().str.contains(necesidad)
-    ]
-
-    if resultados.empty:
         resultados = df[
             df['tipo_piel'].str.lower().str.contains(tipo) &
+            df['edad'].str.lower().str.contains(edad) &
             df['necesidades'].str.lower().str.contains(necesidad)
         ]
 
-    if resultados.empty:
-        resultados = df[
-            df['necesidades'].str.lower().str.contains(necesidad)
-        ]
+        if resultados.empty:
+            resultados = df[
+                df['tipo_piel'].str.lower().str.contains(tipo) &
+                df['necesidades'].str.lower().str.contains(necesidad)
+            ]
 
-    if resultados.empty:
-        st.warning("No encontramos coincidencias exactas, pero aquí tienes algunas sugerencias:")
-        resultados = df.sample(min(3, len(df)))
+        if resultados.empty:
+            resultados = df[
+                df['necesidades'].str.lower().str.contains(necesidad)
+            ]
 
-    for _, row in resultados.iterrows():
-        st.markdown(f"""
-            <div class='producto-card'>
-                <h4>{row['nombre']}</h4>
-                <p><strong>Marca:</strong> {row['marca']}<br>
-                <strong>Precio:</strong> S/ {row['precio']}</p>
-                <a href="{row['enlace']}" target="_blank">Ver producto 🔗</a>
-            </div>
-        """, unsafe_allow_html=True)
+        if resultados.empty:
+            st.warning("No encontramos coincidencias exactas, pero aquí tienes algunas sugerencias:")
+            resultados = df.sample(min(3, len(df)))
+
+        for _, row in resultados.iterrows():
+            st.markdown(f"""
+                <div class='producto-card'>
+                    <h4>{row['nombre']}</h4>
+                    <p><strong>Marca:</strong> {row['marca']}<br>
+                    <strong>Precio:</strong> S/ {row['precio']}</p>
+                    <a href="{row['enlace']}" target="_blank">Ver producto 🔗</a>
+                </div>
+            """, unsafe_allow_html=True)
 
     with st.expander("📖 Más información sobre tu tipo de piel"):
         if st.session_state.tipo_piel == "SECA":
