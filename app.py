@@ -8,26 +8,16 @@ st.set_page_config(page_title="Tu Rutina Skincare", layout="wide")
 
 # --- Estilos personalizados ---
 st.markdown("""
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Quicksand&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
     <style>
     html, body, .stApp {
         background-color: #fceff8;
-        background-image: url('https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/estampado_floral.png');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
         font-family: 'Quicksand', sans-serif;
         color: #333333;
     }
-    input, textarea, select, .stTextInput>div>div>input {
-        background-color: #fff0f5 !important;
-        color: #333 !important;
-        font-weight: bold;
-        border-radius: 8px;
-    }
     .stButton>button {
         background-color: #FFB6C1;
-        color: #333333;
+        color: white !important;
         font-weight: bold;
         border-radius: 10px;
         padding: 10px 20px;
@@ -45,9 +35,9 @@ st.markdown("""
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         margin-bottom: 20px;
     }
-    .expander-content p {
-        font-size: 16px;
-        line-height: 1.6;
+    input, textarea, select {
+        color: #333 !important;
+        background-color: #fff0f6 !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -64,24 +54,14 @@ def cargar_datos():
 
 df = cargar_datos()
 
-# --- Collage de portada ---
-st.markdown("## 🌸 Bienvenida a Tu Rutina Skincare 🌸")
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/collage1.jpg", use_container_width=True)
-with col2:
-    st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/collage2.jpg", use_container_width=True)
-with col3:
-    st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/collage3.jpg", use_container_width=True)
-
-# --- Inicio ---
+# --- Ventana emergente tipo bot ---
 if 'nombre' not in st.session_state:
     with st.form("info_usuario"):
         st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/49725ca650d59cbad0115e87f0325a96.jpg", use_container_width=True)
         st.markdown("### 🌸 Tu piel es especial")
         st.markdown("Descubre tu rutina ideal con solo unos clics")
-        nombre = st.text_input("👤 ¿Cómo te llamas?")
-        edad = st.selectbox("👶 Selecciona tu rango de edad", ["15-25", "26-35", "36-50", "50+"])
+        nombre = st.text_input("¿Cuál es tu nombre?")
+        edad = st.selectbox("Selecciona tu rango de edad", ["15-25", "26-35", "36-50", "50+"])
         diario = st.text_area("📝 Cuéntame, ¿qué esperas mejorar en tu piel?", placeholder="Quiero reducir mis granitos, tener más brillo natural...")
         continuar = st.form_submit_button("Comenzar ✨")
         if continuar and nombre:
@@ -99,7 +79,31 @@ else:
             ("b", "Algo opaca y seca."),
             ("c", "Me brilla toda la cara."),
             ("d", "Algunas zonas están brillosas y otras secas.")]),
-        # ... (más preguntas como antes)
+        ("2. ¿Cómo son tus poros?", [
+            ("a", "Finos y poco visibles."),
+            ("b", "Casi imperceptibles."),
+            ("c", "Grandes y visibles en todo el rostro."),
+            ("d", "Grandes solo en la frente, nariz y mentón.")]),
+        ("3. Al tocar tu piel, ¿cómo se siente?", [
+            ("a", "Suave y lisa."),
+            ("b", "Áspera, a veces descamada."),
+            ("c", "Gruesa, con granitos."),
+            ("d", "Una mezcla de seca y grasa según la zona.")]),
+        ("4. ¿Cómo se comporta tu piel durante el día?", [
+            ("a", "Brilla ligeramente al final del día."),
+            ("b", "Se mantiene opaca casi todo el día."),
+            ("c", "Brilla mucho todo el día."),
+            ("d", "Brilla en la zona T, pero no en las mejillas.")]),
+        ("5. ¿Sueles tener granitos o puntos negros?", [
+            ("a", "Muy pocos o ninguno."),
+            ("b", "Raramente o nunca."),
+            ("c", "Frecuentemente."),
+            ("d", "Algunas veces, según la zona.")]),
+        ("6. Para tu edad, ¿cómo ves tu piel?", [
+            ("a", "Normal, sin muchas imperfecciones."),
+            ("b", "Arrugas marcadas, se siente tirante."),
+            ("c", "Pocas arrugas, pero piel grasa."),
+            ("d", "Algunas líneas finas y zonas mixtas.")]),
     ]
 
     puntajes = {"a": 0, "b": 0, "c": 0, "d": 0}
@@ -116,42 +120,75 @@ else:
         with st.spinner("Analizando tus respuestas... 🤖"):
             time.sleep(2)
         tipo = max(puntajes, key=puntajes.get)
-        tipo_piel, img = {
-            "a": ("NORMAL", "https://..."),
-            "b": ("SECA", "https://..."),
-            "c": ("GRASA", "https://..."),
-            "d": ("MIXTA", "https://...")
-        }[tipo]
+        tipos = {
+            "a": ("NORMAL", "https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/nioormal.jpg"),
+            "b": ("SECA", "https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/pielseca.jpg"),
+            "c": ("GRASA", "https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/cc459e606dd2072aca33f94a274829cf.jpg"),
+            "d": ("MIXTA", "https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/mixta.jpg")
+        }
+        tipo_piel, img = tipos[tipo]
         st.session_state.tipo_piel = tipo_piel
 
         st.image(img, width=300)
         st.success(f"Tu tipo de piel es: **{tipo_piel}**")
 
-        with st.expander("💖 Tu rutina ideal personalizada"):
-            st.write("Selecciona los pasos para ver recomendaciones detalladas:")
-            pasos = ["Limpieza", "Tónico", "Sérum", "Hidratante", "Protector solar"]
-            for paso in pasos:
-                with st.expander(f"🔹 {paso}"):
-                    st.write(f"Consejos específicos para {paso.lower()} según piel {tipo_piel.lower()}...")
+        rutinas = {
+            "SECA": [
+                "🧼 Limpieza suave con productos sin sulfatos",
+                "💧 Tónico hidratante con ácido hialurónico",
+                "💎 Sérum nutritivo con ceramidas",
+                "🧴 Crema rica con manteca de karité",
+                "🌞 Protector solar hidratante"
+            ],
+            "GRASA": [
+                "🧼 Gel limpiador purificante",
+                "💦 Tónico matificante con niacinamida",
+                "💧 Sérum seborregulador",
+                "🧴 Hidratante ligera en gel",
+                "🌞 Protector solar oil-free"
+            ],
+            "MIXTA": [
+                "🧼 Limpieza equilibrante",
+                "💧 Tónico suave",
+                "💎 Sérum adaptado a zonas",
+                "🧴 Hidratante combinada",
+                "🌞 Protector solar ligero"
+            ],
+            "NORMAL": [
+                "🧼 Limpieza básica",
+                "💧 Hidratante ligera",
+                "🌞 Protector solar diario"
+            ]
+        }
 
-        with st.expander("📢 Mitos comunes del skincare"):
-            st.radio("Selecciona un mito para conocer la verdad:", [
-                "El limón aclara la piel",
-                "Si arde, está funcionando",
-                "Solo las mujeres deben cuidarse la piel"
-            ])
-            st.write("Todos debemos cuidar nuestra piel con información segura y actualizada.")
+        with st.expander("💖 Tu rutina ideal"):
+            st.write("Aquí tienes una rutina sugerida para cuidar tu piel diariamente:")
+            for paso in rutinas[tipo_piel]:
+                st.markdown(f"- {paso}")
+            st.text_area("💡 ¿Qué agregarías a esta rutina?", placeholder="Tal vez un contorno de ojos...")
+
+        with st.expander("🚫 Mitos comunes del skincare"):
+            st.write("¡Desmitifiquemos algunos errores comunes!")
+            st.warning("❌ El limón aclara la piel – Puede causar quemaduras.")
+            st.warning("❌ Si arde, está funcionando – Probablemente te está irritando.")
+            st.warning("❌ Solo las mujeres deben cuidarse – ¡Todos debemos hacerlo!")
+            st.text_input("¿Has escuchado otro mito que quieras desmentir?")
 
         with st.expander("📖 Aprende más sobre tu tipo de piel"):
-            st.markdown("### Características, errores comunes y consejos de largo plazo")
-            st.write("Según dermatólogos, tu tipo de piel necesita cuidado específico...")
-            st.info("Consejos adaptados, ingredientes recomendados y rutinas nocturnas.")
+            explicaciones = {
+                "SECA": "La piel seca produce menos sebo y puede sentirse áspera o tirante. Se beneficia de ingredientes como ácido hialurónico, aceites naturales y ceramidas.",
+                "GRASA": "Produce más sebo del necesario, provocando brillo, poros dilatados y acné. Ingredientes clave: ácido salicílico, niacinamida, zinc.",
+                "MIXTA": "Tiene zonas secas y grasas. Requiere cuidado específico por zonas, alternando productos según necesidad.",
+                "NORMAL": "Está en equilibrio. Solo necesita mantenimiento con limpieza, hidratación y protección solar."
+            }
+            st.info(explicaciones[tipo_piel])
+            st.selectbox("¿Te gustaría ver ingredientes recomendados?", ["Sí", "No"])
 
-        with st.expander("🎥 Videos y contenido educativo"):
+        with st.expander("🎥 Videos de skincare y publicidad"):
             st.video("https://www.youtube.com/watch?v=vSKVbp1jepc")
             st.video("https://www.youtube.com/watch?v=kw8UqeBnfxY")
 
-        feedback = st.text_area("💬 ¿Te gustó tu rutina? Cuéntanos tus ideas para mejorarla")
+        feedback = st.text_area("💬 ¿Qué te pareció tu rutina? ¿Te gustaría que mejoremos algo?")
         if feedback:
             st.success("¡Gracias por tu comentario! 💌")
 
