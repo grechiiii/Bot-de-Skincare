@@ -8,53 +8,36 @@ st.set_page_config(page_title="Tu Rutina Skincare", layout="wide")
 
 # --- Estilos personalizados ---
 st.markdown("""
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Quicksand&display=swap" rel="stylesheet">
     <style>
-    html, body, .stApp {
+    body, .stApp {
         background-color: #fceff8;
         font-family: 'Quicksand', sans-serif;
+        color: #111111;
+    }
+    h1, h2, h3, h4, h5, h6, p, label, div, span, input, textarea, select {
         color: #111111 !important;
     }
-
-    * {
-        color: #111111 !important;
-    }
-
-    h1, h2, h3, h4, h5, h6, p, span, div {
-        color: #111111 !important;
-    }
-
-    .stMarkdown, .stTextInput, .stTextArea, .stSelectbox, .stRadio, .stExpander {
-        color: #111111 !important;
-    }
-
     .stButton>button {
         background-color: #FFB6C1;
-        color: white !important;
+        color: white;
         font-weight: bold;
         border-radius: 10px;
         padding: 10px 20px;
         margin: 5px;
         transition: 0.2s;
     }
-
     .stButton>button:hover {
         background-color: #ffa0c5;
         transform: scale(1.05);
     }
-
     .producto-card {
         border-radius: 15px;
         padding: 1rem;
         background-color: white;
-        color: #111111;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         margin-bottom: 20px;
-    }
-
-    input, textarea, select {
-        color: #111111 !important;
-        background-color: #fff0f6 !important;
+        color: #111111;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -71,7 +54,7 @@ def cargar_datos():
 
 df = cargar_datos()
 
-# --- Formulario inicial ---
+# --- Ventana emergente tipo bot ---
 if 'nombre' not in st.session_state:
     with st.form("info_usuario"):
         st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/49725ca650d59cbad0115e87f0325a96.jpg", use_container_width=True)
@@ -101,7 +84,7 @@ else:
             ("b", "Casi imperceptibles."),
             ("c", "Grandes y visibles en todo el rostro."),
             ("d", "Grandes solo en la frente, nariz y mentón.")]),
-        ("3. Al tocar tu piel, ¿como se siente?", [
+        ("3. Al tocar tu piel, ¿cómo se siente?", [
             ("a", "Suave y lisa."),
             ("b", "Áspera, a veces descamada."),
             ("c", "Gruesa, con granitos."),
@@ -116,7 +99,7 @@ else:
             ("b", "Raramente o nunca."),
             ("c", "Frecuentemente."),
             ("d", "Algunas veces, según la zona.")]),
-        ("6. Para tu edad, ¿como ves tu piel?", [
+        ("6. Para tu edad, ¿cómo ves tu piel?", [
             ("a", "Normal, sin muchas imperfecciones."),
             ("b", "Arrugas marcadas, se siente tirante."),
             ("c", "Pocas arrugas, pero piel grasa."),
@@ -156,51 +139,38 @@ else:
             "NORMAL": "Limpieza básica → Hidratante ligera → Protector solar"
         }
 
-        with st.expander("💖 Tu rutina ideal (detalles y tips)"):
+        with st.expander("💖 Tu rutina ideal"):
             st.info(rutinas[tipo_piel])
-            st.markdown("- Aplica los productos con movimientos suaves, sin frotar.")
-            st.markdown("- Usa protector solar incluso si está nublado.")
-            st.markdown("- Cambia de almohada frecuentemente para evitar brotes.")
+            st.write("**Tips adicionales:**")
+            st.write("- Sé constante: La clave del skincare está en la rutina.")
+            st.write("- Cambia productos lentamente, no todo a la vez.")
+            st.write("- Escucha tu piel: si algo no funciona, ajústalo.")
 
-        with st.expander("📣 Mitos comunes del skincare"):
-            st.error("❌ El limón aclara la piel – Puede causar quemaduras.")
-            st.error("❌ Si arde, está funcionando – Probablemente te está irritando.")
-            st.error("❌ Solo las mujeres deben cuidarse la piel – ¡Todos debemos hacerlo!")
+        with st.expander("🚫 Mitos comunes del skincare"):
+            st.write("❌ El limón aclara la piel – Puede causar quemaduras.")
+            st.write("❌ Si arde, está funcionando – Probablemente te está irritando.")
+            st.write("❌ Solo las mujeres deben cuidarse la piel – ¡Todos debemos hacerlo!")
+            st.write("❌ El agua caliente limpia mejor – Solo te deshidrata la piel.")
 
-        with st.expander("📚 Conoce más sobre tu tipo de piel"):
-            descripciones = {
-                "SECA": "Produce menos sebo, se siente tirante o escamosa. Necesita hidratación rica en lípidos y evitar jabones agresivos.",
-                "GRASA": "Produce exceso de sebo, con brillo constante. Usa limpiadores suaves y evita productos oclusivos.",
-                "MIXTA": "Tiene zonas grasas (zona T) y otras secas. Combina productos según las zonas.",
-                "NORMAL": "Equilibrada y sin problemas frecuentes. Mantenla con una rutina simple y constante."
-            }
-            st.write(descripciones[tipo_piel])
+        with st.expander("📖 Más información sobre tu tipo de piel"):
+            if tipo_piel == "SECA":
+                st.write("La piel seca produce menos sebo de lo normal, puede sentirse áspera, tirante y con escamas. Requiere hidratación profunda y productos ricos en lípidos.")
+                st.write("🧴 Usa aceites faciales y evita limpiadores agresivos.")
+            elif tipo_piel == "GRASA":
+                st.write("La piel grasa produce un exceso de sebo, lo que causa brillo, poros dilatados y tendencia al acné. Necesita limpieza constante y productos oil-free.")
+                st.write("🧼 No sobre-laves tu cara, podrías empeorar la producción de grasa.")
+            elif tipo_piel == "MIXTA":
+                st.write("Tiene zonas grasas (zona T) y otras secas. Requiere productos equilibrantes y cuidado personalizado por zonas.")
+                st.write("🧴 Usa productos distintos para zonas diferentes si es necesario.")
+            else:
+                st.write("La piel normal es equilibrada, ni muy grasa ni muy seca. Solo requiere una rutina básica de mantenimiento.")
+                st.write("😌 Puedes usar productos ligeros y mantener una rutina simple pero constante.")
 
         with st.expander("🎥 Videos de skincare y publicidad"):
             st.video("https://www.youtube.com/watch?v=vSKVbp1jepc")
             st.video("https://www.youtube.com/watch?v=kw8UqeBnfxY")
+            st.video("https://www.youtube.com/watch?v=3dfQo9b4EKI")
 
-        st.markdown("### 💬 Comparte tu experiencia")
-        feedback = st.text_area("¿Qué te pareció tu rutina? ¿Te gustaría que mejoremos algo?", placeholder="Me encantó, pero podría tener productos naturales...")
+        feedback = st.text_area("💬 ¿Qué te pareció tu rutina? ¿Te gustaría que mejoremos algo?", placeholder="Me encantó, pero me gustaría que incluyera más opciones naturales...")
         if feedback:
             st.success("¡Gracias por tu comentario! 💌")
-
-        with st.expander("📦 Productos recomendados"):
-            st.toast("Buscando productos para ti...", icon="💼")
-            resultados = df[
-                df['tipo_piel'].str.lower().str.contains(tipo_piel.lower()) &
-                df['edad'].str.lower().str.contains(st.session_state.edad.lower())
-            ]
-            if resultados.empty:
-                resultados = df.sample(min(3, len(df)))
-            for _, row in resultados.iterrows():
-                st.markdown(f"""
-                    <div class='producto-card'>
-                        <h4>{row['nombre']}</h4>
-                        <p><strong>Marca:</strong> {row['marca']}<br>
-                        <strong>Precio:</strong> S/ {row['precio']}</p>
-                        <a href="{row['enlace']}" target="_blank">Ver producto 🔗</a>
-                    </div>
-                """, unsafe_allow_html=True)
-
-
