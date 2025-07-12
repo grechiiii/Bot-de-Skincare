@@ -8,15 +8,18 @@ st.set_page_config(page_title="Tu Rutina Skincare", layout="wide")
 
 # --- Estilos personalizados ---
 st.markdown("""
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Quicksand&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
     <style>
-    body, .stApp {
-        background-color: #fceff8;
+    html, body, [class*="css"]  {
         font-family: 'Quicksand', sans-serif;
-        color: #111111;
-    }
-    h1, h2, h3, h4, h5, h6, p, label, div, span, input, textarea, select {
+        background-color: #fceff8;
         color: #111111 !important;
+    }
+    .stApp {
+        background-image: url('https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/estampado_floral.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
     }
     .stButton>button {
         background-color: #FFB6C1;
@@ -53,6 +56,10 @@ def cargar_datos():
     return pd.read_csv("productos_chatbot_final.csv")
 
 df = cargar_datos()
+
+# --- Portada ---
+st.markdown("## 🌸 Bienvenida a Tu Rutina Skincare 🌸")
+st.markdown("Descubre tu rutina facial perfecta con ayuda de este bot interactivo ✨")
 
 # --- Ventana emergente tipo bot ---
 if 'nombre' not in st.session_state:
@@ -139,32 +146,57 @@ else:
             "NORMAL": "Limpieza básica → Hidratante ligera → Protector solar"
         }
 
-        with st.expander("💖 Tu rutina ideal"):
+        with st.expander("💖 Tu rutina ideal paso a paso"):
             st.info(rutinas[tipo_piel])
-            st.write("**Tips adicionales:**")
-            st.write("- Sé constante: La clave del skincare está en la rutina.")
-            st.write("- Cambia productos lentamente, no todo a la vez.")
-            st.write("- Escucha tu piel: si algo no funciona, ajústalo.")
+            st.write("¿Por qué esta rutina es ideal para ti?")
+            st.write("- Los productos están adaptados a tu tipo de piel.")
+            st.write("- Evitan irritaciones o exceso de grasa.")
+            st.write("- Puedes seguirla día y noche para mejores resultados.")
+
+        with st.expander("🧴 Productos recomendados solo para ti"):
+            st.toast("Buscando productos para ti...", icon="💼")
+            resultados = df[
+                df['tipo_piel'].str.lower().str.contains(tipo_piel.lower()) &
+                df['edad'].str.lower().str.contains(st.session_state.edad.lower())
+            ]
+            if resultados.empty:
+                resultados = df.sample(min(3, len(df)))
+            for _, row in resultados.iterrows():
+                st.markdown(f"""
+                    <div class='producto-card'>
+                        <h4>{row['nombre']}</h4>
+                        <p><strong>Marca:</strong> {row['marca']}<br>
+                        <strong>Precio:</strong> S/ {row['precio']}</p>
+                        <a href="{row['enlace']}" target="_blank">Ver producto 🔗</a>
+                    </div>
+                """, unsafe_allow_html=True)
 
         with st.expander("🚫 Mitos comunes del skincare"):
-            st.write("❌ El limón aclara la piel – Puede causar quemaduras.")
-            st.write("❌ Si arde, está funcionando – Probablemente te está irritando.")
-            st.write("❌ Solo las mujeres deben cuidarse la piel – ¡Todos debemos hacerlo!")
-            st.write("❌ El agua caliente limpia mejor – Solo te deshidrata la piel.")
+            st.error("❌ El limón aclara la piel – Puede causar quemaduras.")
+            st.error("❌ Si arde, está funcionando – Probablemente te está irritando.")
+            st.error("❌ Solo las mujeres deben cuidarse la piel – ¡Todos debemos hacerlo!")
 
         with st.expander("📖 Más información sobre tu tipo de piel"):
             if tipo_piel == "SECA":
-                st.write("La piel seca produce menos sebo de lo normal, puede sentirse áspera, tirante y con escamas. Requiere hidratación profunda y productos ricos en lípidos.")
-                st.write("🧴 Usa aceites faciales y evita limpiadores agresivos.")
+                st.info("La piel seca produce menos sebo de lo normal, puede sentirse áspera, tirante y con escamas. Requiere hidratación profunda y productos ricos en lípidos.")
+                st.write("Tips adicionales:")
+                st.write("- Usa mascarillas hidratantes semanales.")
+                st.write("- Evita duchas muy calientes.")
             elif tipo_piel == "GRASA":
-                st.write("La piel grasa produce un exceso de sebo, lo que causa brillo, poros dilatados y tendencia al acné. Necesita limpieza constante y productos oil-free.")
-                st.write("🧼 No sobre-laves tu cara, podrías empeorar la producción de grasa.")
+                st.info("La piel grasa produce un exceso de sebo, lo que causa brillo, poros dilatados y tendencia al acné. Necesita limpieza constante y productos oil-free.")
+                st.write("Tips adicionales:")
+                st.write("- No frotes tu piel con fuerza.")
+                st.write("- Usa papel secante si brillas durante el día.")
             elif tipo_piel == "MIXTA":
-                st.write("Tiene zonas grasas (zona T) y otras secas. Requiere productos equilibrantes y cuidado personalizado por zonas.")
-                st.write("🧴 Usa productos distintos para zonas diferentes si es necesario.")
+                st.info("Tiene zonas grasas (zona T) y otras secas. Requiere productos equilibrantes y cuidado personalizado por zonas.")
+                st.write("Tips adicionales:")
+                st.write("- Usa productos diferentes según la zona.")
+                st.write("- No olvides la hidratación aunque tengas partes grasas.")
             else:
-                st.write("La piel normal es equilibrada, ni muy grasa ni muy seca. Solo requiere una rutina básica de mantenimiento.")
-                st.write("😌 Puedes usar productos ligeros y mantener una rutina simple pero constante.")
+                st.info("La piel normal es equilibrada, ni muy grasa ni muy seca. Solo requiere una rutina básica de mantenimiento.")
+                st.write("Tips adicionales:")
+                st.write("- Usa protector solar todos los días.")
+                st.write("- Mantén una rutina constante.")
 
         with st.expander("🎥 Videos de skincare y publicidad"):
             st.video("https://www.youtube.com/watch?v=vSKVbp1jepc")
@@ -174,3 +206,4 @@ else:
         feedback = st.text_area("💬 ¿Qué te pareció tu rutina? ¿Te gustaría que mejoremos algo?", placeholder="Me encantó, pero me gustaría que incluyera más opciones naturales...")
         if feedback:
             st.success("¡Gracias por tu comentario! 💌")
+
