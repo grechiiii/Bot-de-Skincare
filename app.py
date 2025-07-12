@@ -88,7 +88,26 @@ else:
             ("b", "Algo opaca y seca."),
             ("c", "Me brilla toda la cara."),
             ("d", "Algunas zonas están brillosas y otras secas.")]),
-        # ... (preguntas 2 a 6 igual que antes)
+        ("2. ¿Cómo son tus poros?", [
+            ("a", "Finos y poco visibles."),
+            ("b", "Casi imperceptibles."),
+            ("c", "Grandes y visibles en todo el rostro."),
+            ("d", "Grandes solo en la frente, nariz y mentón.")]),
+        ("3. Al tocar tu piel, ¿cómo se siente?", [
+            ("a", "Suave y lisa."),
+            ("b", "Áspera, a veces descamada."),
+            ("c", "Gruesa, con granitos."),
+            ("d", "Una mezcla de seca y grasa según la zona.")]),
+        ("4. ¿Cómo se comporta tu piel durante el día?", [
+            ("a", "Brilla ligeramente al final del día."),
+            ("b", "Se mantiene opaca casi todo el día."),
+            ("c", "Brilla mucho todo el día."),
+            ("d", "Brilla en la zona T, pero no en las mejillas.")]),
+        ("5. ¿Sueles tener granitos o puntos negros?", [
+            ("a", "Muy pocos o ninguno."),
+            ("b", "Raramente o nunca."),
+            ("c", "Frecuentemente."),
+            ("d", "Algunas veces, según la zona.")]),
         ("6. Para tu edad, ¿cómo ves tu piel?", [
             ("a", "Normal, sin muchas imperfecciones."),
             ("b", "Arrugas marcadas, se siente tirante."),
@@ -183,5 +202,3 @@ else:
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
-
-
