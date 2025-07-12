@@ -144,14 +144,48 @@ else:
         st.image(img, width=300)
         st.success(f"Tu tipo de piel es: **{tipo_piel}**")
 
-        with st.expander("🧴 Productos recomendados para ti"):
-            st.toast("Buscando productos para ti...", icon="💼")
-            resultados = df[
-                df['tipo_piel'].str.lower().str.contains(tipo_piel.lower()) &
-                df['edad'].str.lower().str.contains(st.session_state.edad.lower())
-            ]
-            if resultados.empty:
-                resultados = df.sample(min(3, len(df)))
+        # Sección de productos recomendados con búsqueda por necesidad
+with st.expander("🧴 Productos recomendados solo para ti"):
+    st.toast("Buscando productos para ti...", icon="💼")
+    tipo = st.session_state.tipo_piel.lower()
+    edad = st.session_state.edad.lower()
+    necesidad = st.session_state.diario.lower()  # esto recoge lo que escribió el usuario
+
+    # Búsqueda estricta: tipo + edad + necesidad
+    resultados = df[
+        df['tipo_piel'].str.lower().str.contains(tipo) &
+        df['edad'].str.lower().str.contains(edad) &
+        df['necesidades'].str.lower().str.contains(necesidad)
+    ]
+
+    # Búsqueda intermedia: tipo + necesidad
+    if resultados.empty:
+        resultados = df[
+            df['tipo_piel'].str.lower().str.contains(tipo) &
+            df['necesidades'].str.lower().str.contains(necesidad)
+        ]
+
+    # Búsqueda mínima: solo necesidad
+    if resultados.empty:
+        resultados = df[
+            df['necesidades'].str.lower().str.contains(necesidad)
+        ]
+
+    # Recomendación aleatoria
+    if resultados.empty:
+        st.warning("No encontramos coincidencias exactas, pero aquí tienes algunas sugerencias:")
+        resultados = df.sample(min(3, len(df)))
+
+    for _, row in resultados.iterrows():
+        st.markdown(f"""
+            <div class='producto-card'>
+                <h4>{row['nombre']}</h4>
+                <p><strong>Marca:</strong> {row['marca']}<br>
+                <strong>Precio:</strong> S/ {row['precio']}</p>
+                <a href="{row['enlace']}" target="_blank">Ver producto 🔗</a>
+            </div>
+        """, unsafe_allow_html=True)
+        
             for _, row in resultados.iterrows():
                 st.markdown(f"""
                     <div class='producto-card'>
