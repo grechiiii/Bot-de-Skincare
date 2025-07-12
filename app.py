@@ -18,6 +18,10 @@ st.markdown("""
         background-attachment: fixed;
         background-color: #fceff8;
         font-family: 'Dancing Script', cursive;
+        color: #333333;
+    }
+    * {
+        color: #333333 !important;
     }
     .stButton>button {
         background-color: #FFB6C1;
@@ -194,4 +198,5 @@ else:
         feedback = st.text_area("💬 ¿Qué te pareció tu rutina? ¿Te gustaría que mejoremos algo?", placeholder="Me encantó, pero me gustaría que incluyera más opciones naturales...")
         if feedback:
             st.success("¡Gracias por tu comentario! 💌")
+
 
