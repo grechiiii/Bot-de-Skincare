@@ -144,7 +144,7 @@ else:
 
         with st.expander("📖 Aprende más sobre tu tipo de piel"):
             st.markdown("### Características, errores comunes y consejos de largo plazo")
-            st.write("Según dermatn dermat\u00fologos, tu tipo de piel necesita...")
+            st.write("Según dermatólogos, tu tipo de piel necesita cuidado específico...")
             st.info("Consejos adaptados, ingredientes recomendados y rutinas nocturnas.")
 
         with st.expander("🎥 Videos y contenido educativo"):
