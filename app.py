@@ -8,9 +8,16 @@ st.set_page_config(page_title="Tu Rutina Skincare", layout="wide")
 
 # --- Estilos personalizados ---
 st.markdown("""
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Quicksand&display=swap" rel="stylesheet">
     <style>
-    body {
-        background-color: #FFEFF4;
+    body, .stApp {
+        background-image: url('https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/estampado_floral.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-color: #fceff8;
+        font-family: 'Dancing Script', cursive;
     }
     .stButton>button {
         background-color: #FFB6C1;
@@ -19,6 +26,11 @@ st.markdown("""
         border-radius: 10px;
         padding: 10px 20px;
         margin: 5px;
+        transition: 0.2s;
+    }
+    .stButton>button:hover {
+        background-color: #ffa0c5;
+        transform: scale(1.05);
     }
     .producto-card {
         border-radius: 15px;
@@ -32,35 +44,45 @@ st.markdown("""
 
 # --- Sidebar cute ---
 st.sidebar.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/gatito%20skincare.jpg", width=180)
-st.sidebar.markdown("### 🌸 ¡Bienvenida!")
+st.sidebar.markdown("### ✨ ¡Bienvenida!")
 st.sidebar.markdown("Este bot te ayudará a encontrar tu rutina ideal de skincare.\n1. Ingresa tu nombre\n2. Haz el test\n3. Descubre productos perfectos para ti")
 
 # --- Cargar datos ---
 @st.cache_data
-
 def cargar_datos():
     return pd.read_csv("productos_chatbot_final.csv")
 
 df = cargar_datos()
 
+# --- Collage de portada ---
+with st.container():
+    st.markdown("## 🌸 Bienvenida a Tu Rutina Skincare 🌸")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/collage1.jpg", use_column_width=True)
+    with col2:
+        st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/collage2.jpg", use_column_width=True)
+    with col3:
+        st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/collage3.jpg", use_column_width=True)
+
 # --- Ventana emergente tipo bot ---
 if 'nombre' not in st.session_state:
     with st.form("info_usuario"):
         st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/49725ca650d59cbad0115e87f0325a96.jpg", use_container_width=True)
-        st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/e35b494c3282d7da6bd7697435a4896c.jpg", width=200)
-        st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/gatito%20skincare.jpg", width=200)
-        st.markdown("### 🌷 Tu piel es especial")
-        st.markdown("Descubre tu rutina ideal con solo unos clics 🌼")
-        nombre = st.text_input("🐱 ¿Cómo te llamas?")
-        edad = st.text_input("🎀 ¿Qué edad tienes?")
+        st.markdown("### 🌸 Tu piel es especial")
+        st.markdown("Descubre tu rutina ideal con solo unos clics")
+        nombre = st.text_input("¿Cuál es tu nombre?")
+        edad = st.selectbox("Selecciona tu rango de edad", ["15-25", "26-35", "36-50", "50+"])
+        diario = st.text_area("📝 Cuéntame, ¿qué esperas mejorar en tu piel?", placeholder="Quiero reducir mis granitos, tener más brillo natural...")
         continuar = st.form_submit_button("Comenzar ✨")
-        if continuar and nombre and edad:
+        if continuar and nombre:
             st.session_state.nombre = nombre
             st.session_state.edad = edad
+            st.session_state.diario = diario
             st.rerun()
 else:
     st.markdown(f"## Hola, {st.session_state.nombre} 🌸")
-    st.markdown("### Vamos a conocerte mejor con este test de piel 💬")
+    st.markdown("### Vamos a conocerte mejor con este test de piel 💎")
 
     preguntas = [
         ("1. ¿Cómo luce tu piel al natural?", [
@@ -98,15 +120,15 @@ else:
     puntajes = {"a": 0, "b": 0, "c": 0, "d": 0}
     with st.form("test_piel"):
         for p, opciones in preguntas:
-            with st.expander(f"🌼 {p}"):
-                r = st.radio("", [texto for _, texto in opciones], key=p)
-                for letra, texto in opciones:
-                    if r == texto:
-                        puntajes[letra] += 1
-        enviar = st.form_submit_button("💖 Ver mi tipo de piel")
+            st.markdown(f"**{p}**")
+            r = st.radio("", [texto for _, texto in opciones], key=p)
+            for letra, texto in opciones:
+                if r == texto:
+                    puntajes[letra] += 1
+        enviar = st.form_submit_button("Ver mi tipo de piel 💕")
 
     if enviar:
-        with st.spinner("Analizando tus respuestas mágicamente... ✨"):
+        with st.spinner("Analizando tus respuestas... 🤖"):
             time.sleep(2)
         tipo = max(puntajes, key=puntajes.get)
         tipos = {
@@ -119,7 +141,7 @@ else:
         st.session_state.tipo_piel = tipo_piel
 
         st.image(img, width=300)
-        st.success(f"🌷 Tu tipo de piel es: **{tipo_piel}**")
+        st.success(f"Tu tipo de piel es: **{tipo_piel}**")
 
         rutinas = {
             "SECA": "Limpieza suave → Tónico hidratante → Sérum → Crema rica → Protector solar",
@@ -128,13 +150,11 @@ else:
             "NORMAL": "Limpieza básica → Hidratante ligera → Protector solar"
         }
 
-        with st.expander("💧 Tu rutina ideal"):
-            st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/28f28c43a48503a72a30c1932c6b1e8f.jpg", width=300)
+        with st.expander("💖 Tu rutina ideal"):
             st.info(rutinas[tipo_piel])
 
-        with st.expander("🛍️ Productos recomendados"):
-            st.image("https://raw.githubusercontent.com/grechiiii/Bot-de-Skincare/main/images/2e3f21bd400e7ceecf15b70fcfa0c479.jpg", width=300)
-            st.toast("Buscando productos bonitos para ti...", icon="🧼")
+        with st.expander("🛎9 Productos recomendados"):
+            st.toast("Buscando productos para ti...", icon="💼")
             resultados = df[
                 df['tipo_piel'].str.lower().str.contains(tipo_piel.lower()) &
                 df['edad'].str.lower().str.contains(st.session_state.edad.lower())
@@ -147,7 +167,7 @@ else:
                         <h4>{row['nombre']}</h4>
                         <p><strong>Marca:</strong> {row['marca']}<br>
                         <strong>Precio:</strong> S/ {row['precio']}</p>
-                        <a href="{row['enlace']}" target="_blank">✨ Ver producto ✨</a>
+                        <a href="{row['enlace']}" target="_blank">Ver producto 🔗</a>
                     </div>
                 """, unsafe_allow_html=True)
 
@@ -156,7 +176,7 @@ else:
             st.error("❌ Si arde, está funcionando – Probablemente te está irritando.")
             st.error("❌ Solo las mujeres deben cuidarse la piel – ¡Todos debemos hacerlo!")
 
-        with st.expander("📚 Más información sobre tu tipo de piel"):
+        with st.expander("📖 Más información sobre tu tipo de piel"):
             if tipo_piel == "SECA":
                 st.info("La piel seca produce menos sebo de lo normal, puede sentirse áspera, tirante y con escamas. Requiere hidratación profunda y productos ricos en lípidos.")
             elif tipo_piel == "GRASA":
@@ -170,4 +190,8 @@ else:
             st.video("https://www.youtube.com/watch?v=vSKVbp1jepc")
             st.video("https://www.youtube.com/watch?v=kw8UqeBnfxY")
             st.video("https://www.youtube.com/watch?v=3dfQo9b4EKI")
+
+        feedback = st.text_area("💬 ¿Qué te pareció tu rutina? ¿Te gustaría que mejoremos algo?", placeholder="Me encantó, pero me gustaría que incluyera más opciones naturales...")
+        if feedback:
+            st.success("¡Gracias por tu comentario! 💌")
 
